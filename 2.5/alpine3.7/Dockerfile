@@ -1,4 +1,6 @@
 FROM alpine:3.7
+# Segfault happens on Alpine x jemalloc x glibc (x miniruby)
+# https://bugs.ruby-lang.org/issues/13524
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
@@ -12,6 +14,7 @@ ENV RUBY_VERSION 2.5.1
 ENV RUBY_DOWNLOAD_SHA256 886ac5eed41e3b5fc699be837b0087a6a5a3d10f464087560d2d21b3e71b754d
 ENV RUBYGEMS_VERSION 2.7.7
 ENV BUNDLER_VERSION 1.16.2
+ENV MALLOC_CONF=narenas:2 # Memory save is the whole purpose of this
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
@@ -29,6 +32,7 @@ RUN set -ex \
 		gcc \
 		gdbm-dev \
 		glib-dev \
+		jemalloc-dev \
 		libc-dev \
 		libffi-dev \
 		libressl \
@@ -72,6 +76,7 @@ RUN set -ex \
 		--build="$gnuArch" \
 		--disable-install-doc \
 		--enable-shared \
+		--with-jemalloc \
 	&& make -j "$(nproc)" \
 	&& make install \
 	\
