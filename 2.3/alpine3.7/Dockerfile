@@ -29,6 +29,7 @@ RUN set -ex \
 		gcc \
 		gdbm-dev \
 		glib-dev \
+		jemalloc \
 		libc-dev \
 		libffi-dev \
 		libressl \
@@ -72,6 +73,7 @@ RUN set -ex \
 		--build="$gnuArch" \
 		--disable-install-doc \
 		--enable-shared \
+		--with-jemalloc \
 	&& make -j "$(nproc)" \
 	&& make install \
 	\
